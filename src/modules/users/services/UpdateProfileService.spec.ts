@@ -18,6 +18,22 @@ describe('UpdateProfile', () => {
     );
   });
 
+  it('should not be able to recover a non-existing user profile', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: '123456',
+    });
+
+    await expect(
+      updateProfile.execute({
+        user_id: user.id,
+        name: 'Jhon Trê',
+        email: 'jhontre@example.com',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
   it('should be able update the profile', async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
@@ -72,7 +88,7 @@ describe('UpdateProfile', () => {
       password: '123123',
     });
 
-    expect((await updateUser).password).toBe('123123');
+    await expect((await updateUser).password).toBe('123123');
   });
 
   it('should be able to update the password without old password', async () => {
