@@ -4,41 +4,35 @@ import AppError from '@shared/errors/AppError';
 import CreateUserService from './CreateUserService';
 import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 
-describe('CreateAppointment', () => {
-  it('should be abe to create a new appointment', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeHashProvider = new FakeHashProvider();
+let fakeUsersRepository: FakeUsersRepository;
+let fakeHashProvider: FakeHashProvider;
+let createUser: CreateUserService;
 
-    const createUserService = new CreateUserService(
-      fakeUsersRepository,
-      fakeHashProvider,
-    );
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-    expect(user).toHaveProperty('id');
+describe('CreateUser', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeHashProvider = new FakeHashProvider();
+    createUser = new CreateUserService(fakeUsersRepository, fakeHashProvider);
   });
 
-  it('should be able to create two appointments on the same time', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeHashProvider = new FakeHashProvider();
+  it('should be abe to create a new user', async () => {
+    const user = await createUser.execute({
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: '123456',
+    });
+    await expect(user).toHaveProperty('id');
+  });
 
-    const createAppointment = new CreateUserService(
-      fakeUsersRepository,
-      fakeHashProvider,
-    );
-
-    await createAppointment.execute({
+  it('should not be able to create a new user with same email from another', async () => {
+    await createUser.execute({
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
     });
 
-    expect(
-      createAppointment.execute({
+    await expect(
+      createUser.execute({
         name: 'John Doe',
         email: 'johndoe@example.com',
         password: '123456',

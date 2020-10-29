@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import userToken from './UserToken';
 
 // KISS - Keep It Simple & Stupid
 

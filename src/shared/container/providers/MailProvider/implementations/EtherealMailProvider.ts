@@ -1,7 +1,12 @@
 import nodemailer, { Transporter } from 'nodemailer';
-import IMailProvider from '../models/IMailProvider';
+import { IMailProvider } from '../models/IMailProvider';
+import ISendMailDTO from '../dtos/ISendMailDTO';
 
-export default class EtherrealMailProvider implements IMailProvider {
+import HandlebarsMailTemplateProvider from '../../MailTemplateProvider/implementations/HandlebarsMailTemplateProvider';
+
+const handelbarsMailTemplateMailProvider = new HandlebarsMailTemplateProvider();
+
+class EtherrealMailProvider implements IMailProvider {
   private client: Transporter;
 
   constructor() {
@@ -20,15 +25,28 @@ export default class EtherrealMailProvider implements IMailProvider {
     });
   }
 
-  public async sendMail(to: string, body: string): Promise<void> {
+  public async sendMail({
+    to,
+    from,
+    subject,
+    templateData,
+  }: ISendMailDTO): Promise<void> {
     const message = await this.client.sendMail({
-      from: 'Equipe Gobarber <equipe@gobarber.com.br>',
-      to,
-      subject: 'Recuperacão de senha',
-      text: body,
+      from: {
+        name: from?.name || 'Equipe goBarber',
+        address: from?.email || 'equipe@gobarber.com.br',
+      },
+      to: {
+        name: to.name,
+        address: to.email,
+      },
+      subject,
+      html: await handelbarsMailTemplateMailProvider.parse(templateData),
     });
 
     console.log('Message sent: %s', message.messageId);
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
   }
 }
+
+export default EtherrealMailProvider;
