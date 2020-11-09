@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-
+import AppError from '@shared/errors/AppError';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import ICreateUserDTO from '@modules/users/dtos/ICreateUserDTO';
@@ -13,6 +13,7 @@ class UsersRepository implements IUsersRepository {
 
   public async findById(id: string): Promise<User | undefined> {
     const user = await this.ormRepository.findOne(id);
+
     return user;
   }
 

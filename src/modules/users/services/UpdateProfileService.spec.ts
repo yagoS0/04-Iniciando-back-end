@@ -19,17 +19,11 @@ describe('UpdateProfile', () => {
   });
 
   it('should not be able to recover a non-existing user profile', async () => {
-    const user = await fakeUsersRepository.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-
     await expect(
       updateProfile.execute({
-        user_id: user.id,
-        name: 'Jhon Trê',
-        email: 'jhontre@example.com',
+        user_id: '123',
+        name: 'non-exiting-user',
+        email: 'non-existing-email@example.com',
       }),
     ).rejects.toBeInstanceOf(AppError);
   });
